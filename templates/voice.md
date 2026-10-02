@@ -1,52 +1,60 @@
 # voice.md
 
-Copy this to `~/.claude/linkedin/voice.md` and fill it in. Every skill in the
-pack reads it. Ten minutes here is the difference between drafts you post and
-drafts you rewrite.
+Copie este arquivo para `~/.claude/linkedin/voice.md` e preencha. Todas as
+skills do pacote leem este arquivo. Dez minutos aqui são a diferença entre
+rascunhos que você publica e rascunhos que você reescreve.
 
-If you would rather not fill it in by hand, paste three of your own posts into
-Claude and say "write my voice.md from these". That works better than guessing
-at the answers.
+Se preferir não preencher à mão, cole três posts seus no Claude e diga
+"escreva meu voice.md a partir destes". Funciona melhor do que tentar adivinhar
+as respostas.
 
 ---
 
-## Who I am
+## Quem eu sou
 
-- **Name:**
-- **What I do, in one sentence:**
-- **Who I am writing for:** (be specific: "agency owners doing $1-5M", not "professionals")
-- **What I sell:**
+- **Nome:**
+- **O que eu faço, em uma frase:**
+- **Para quem eu escrevo:** (seja específico: "donos de agência faturando entre R$ 1 e 5 milhões por ano", não "profissionais")
+- **O que eu vendo:**
+- **Em que idioma eu publico:** (português / inglês / os dois, e quando uso cada um)
 
-## What I sound like
+## Como eu soo
 
-- **Three of my own posts that sound most like me:** (paste them, or link them)
-- **Words I actually use:**
-- **Words I would never use:**
-- **Sentence length:** (short and punchy / mixed / long and considered)
-- **Do I swear:** (yes / mild / no)
-- **Emoji:** (never / one, rarely / freely)
-- **Contractions:** (yes - almost always yes)
+- **Três posts meus que mais soam como eu:** (cole aqui ou coloque os links)
+- **Palavras que eu realmente uso:**
+- **Palavras que eu nunca usaria:**
+- **Tamanho das frases:** (curtas e diretas / variado / longas e elaboradas)
+- **Nível de formalidade:** (formal / profissional mas próximo / bem informal)
+- **Como trato o leitor:** (você / vocês / sem tratamento direto)
+- **Oralidade:** (uso "pra", "tá", "a gente" / às vezes / nunca, escrevo no padrão culto)
+- **Travessão (—):** (uso com frequência / às vezes / nunca)
+  Se usar, o humanizador mantém o travessão em vez de trocar por vírgula.
+- **Anglicismos de mercado:** (quais eu uso naturalmente, como lead, call, insight, deadline; e quais eu evito)
+- **Termos técnicos da minha área:** (os que eu uso sem explicar e os que eu sempre explico para o leitor)
+- **Palavrão:** (sim / leve / não)
+- **Emoji:** (nunca / um, raramente / à vontade)
 
-## My positions
+## Minhas posições
 
-Three to five things I believe that some of my audience does not. These are
-where the good posts come from.
+De três a cinco coisas em que eu acredito e com as quais parte do meu público
+não concorda. É daqui que saem os bons posts.
 
 1.
 2.
 3.
 
-## Off limits
+## Fora dos limites
 
-- **Topics I do not post about:**
-- **Clients or numbers I cannot name publicly:**
-- **Claims I am not allowed to make:** (regulated industry, employer policy, NDA)
+- **Assuntos sobre os quais eu não posto:**
+- **Clientes ou números que não posso citar publicamente:**
+- **Afirmações que não posso fazer:** (setor regulado, política da empresa, contrato de confidencialidade)
+- **Se eu tenho mais de uma empresa ou cargo:** (em nome de qual eu falo neste perfil, e o que de cada uma eu posso mencionar)
 
-## Proof I can use
+## Provas que posso usar
 
-Real numbers, outcomes and stories I am happy to put my name on. The skills
-will never invent one, so if this section is empty, every draft comes back
-with `{{your number}}` in it.
+Números, resultados e histórias reais que eu aceito assinar com o meu nome.
+As skills nunca inventam nenhum, então se esta seção estiver vazia, todo
+rascunho volta com `{{seu número}}` no texto.
 
 -
 -
