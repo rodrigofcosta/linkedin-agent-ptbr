@@ -1,29 +1,40 @@
 #!/usr/bin/env python3
 """
-humanize.py - strip the machine fingerprint out of a draft.
+humanize.py - tira a impressão digital de máquina de um rascunho.
+Versão adaptada para português do Brasil.
 
-Three passes, in this order:
+Três passadas, nesta ordem:
 
-  1. INVISIBLE   delete or normalise the characters a human keyboard never
-                 produces: zero-width joiners, word joiners, soft hyphens,
-                 BOMs, Unicode tag characters, non-breaking and narrow spaces.
-                 These survive copy-paste and are the most mechanical tell in
-                 any generated text.
-  2. TYPOGRAPHIC em dash -> comma, en dash -> hyphen, curly quotes -> straight,
-                 ellipsis -> three dots, bullet -> hyphen.
-  3. LEXICAL     replace the slop lexicon in slop.json with plain words,
-                 preserving capitalisation and leaving URLs untouched.
+  1. INVISÍVEIS   apaga ou normaliza caracteres que um teclado humano nunca
+                  produz: zero-width joiners, word joiners, hífens suaves,
+                  BOMs, caracteres Unicode de tag, espaços rígidos e estreitos.
+                  Eles sobrevivem ao copiar e colar e são o sinal mais
+                  mecânico de qualquer texto gerado.
+  2. TIPOGRAFIA   travessão -> vírgula, meia-risca -> hífen, aspas curvas ->
+                  retas, reticências -> três pontos, marcador -> hífen.
+  3. LÉXICO       troca o vocabulário batido do slop.json por palavras simples,
+                  preservando maiúsculas e sem mexer em URLs.
 
-Structural tells (rule-of-three, "not just X, it's Y", hashtag walls) are
-REPORTED, never auto-rewritten - rewriting a sentence's shape needs judgement,
-so that is the model's job, not a regex's.
+Estruturas denunciadoras (regra de três, "não é só X, é Y", muro de hashtags)
+são APONTADAS, nunca reescritas automaticamente - mudar o formato de uma frase
+exige julgamento, então isso é trabalho do modelo, não de uma regex.
 
-Usage
-  python3 humanize.py draft.txt
-  python3 humanize.py draft.txt --report
+Adaptações para pt-BR em relação ao original (MIT, Jake Schincariol):
+  - conserto de frases emendadas usa conectivos em português;
+  - frase que perde a abertura ("Vale ressaltar que...") volta a começar com
+    letra maiúscula;
+  - "Também," solto no início de frase (sobra de "Além disso,") é removido;
+  - opção --keep-dash para manter o travessão, que é pontuação legítima em
+    português;
+  - caracteres especiais escritos como escapes Unicode.
+
+Uso
+  python3 humanize.py rascunho.txt
+  python3 humanize.py rascunho.txt --report
   pbpaste | python3 humanize.py - --report
-  python3 humanize.py draft.txt --json
-  python3 humanize.py draft.txt -o clean.txt
+  python3 humanize.py rascunho.txt --json
+  python3 humanize.py rascunho.txt -o limpo.txt
+  python3 humanize.py rascunho.txt --keep-dash
 """
 
 import argparse
@@ -39,6 +50,10 @@ LEX = os.path.join(HERE, "slop.json")
 URL_RE = re.compile(r"https?://\S+|www\.\S+|\S+@\S+\.\S+")
 SENT_RE = re.compile(r"[^.!?\n]+[.!?]*")
 
+EM_DASH = "\u2014"
+EN_DASH = "\u2013"
+LOWER = "a-zß-öø-ÿ"
+
 
 def load_lexicon(path=LEX):
     with open(path, encoding="utf-8") as fh:
@@ -46,7 +61,7 @@ def load_lexicon(path=LEX):
 
 
 def _cp(spec):
-    """'U+200B' -> '\\u200b';  'U+E0000-U+E007F' -> (start, end)."""
+    """'U+200B' -> 0x200B;  'U+E0000-U+E007F' -> (inicio, fim)."""
     if "-" in spec:
         a, b = spec.split("-")
         return (int(a[2:], 16), int(b[2:], 16))
@@ -54,7 +69,7 @@ def _cp(spec):
 
 
 def protect_urls(text):
-    """Swap URLs for placeholders so no pass rewrites inside a link."""
+    """Troca URLs por marcadores para nenhuma passada mexer dentro de um link."""
     found = []
 
     def stash(m):
@@ -71,7 +86,7 @@ def restore_urls(text, found):
 
 
 def pass_invisible(text, lex):
-    """Delete or space-normalise invisible characters. Returns (text, hits)."""
+    """Apaga ou transforma em espaço os caracteres invisíveis. Retorna (texto, ocorrências)."""
     hits = []
     for entry in lex["invisible"]:
         cp = _cp(entry["cp"])
@@ -84,33 +99,35 @@ def pass_invisible(text, lex):
             hits.append({"name": entry["cp"] + " " + entry["name"], "count": n,
                          "action": entry["action"]})
             text = re.sub(pattern, "" if entry["action"] == "delete" else " ", text)
-    # Any remaining Cf (format) character is invisible by definition.
+    # Qualquer caractere de formatação (Cf) restante é invisível por definição.
     stray = [c for c in text if unicodedata.category(c) == "Cf"]
     if stray:
-        hits.append({"name": "other invisible format chars", "count": len(stray),
+        hits.append({"name": "outros caracteres invisíveis de formatação", "count": len(stray),
                      "action": "delete"})
         text = "".join(c for c in text if unicodedata.category(c) != "Cf")
     return text, hits
 
 
-def pass_typographic(text, lex):
+def pass_typographic(text, lex, keep_dash=False):
     hits = []
     for entry in lex["typographic"]:
         ch = entry["from"]
+        if keep_dash and ch == EM_DASH:
+            continue
         n = text.count(ch)
         if not n:
             continue
-        hits.append({"name": f"{ch} {entry['name']}", "count": n, "to": entry["to"].strip() or "(space)"})
-        if ch == "—":
-            # " word — word " and "word—word" both collapse to a comma + space.
-            text = re.sub(r"\s*—\s*", ", ", text)
-        elif ch == "–":
-            text = re.sub(r"\s*–\s*(?=\d)", "-", text)      # 5–10  -> 5-10
-            text = re.sub(r"\s+–\s+", ", ", text)            # used as em dash
-            text = text.replace("–", "-")
+        hits.append({"name": f"{ch} {entry['name']}", "count": n, "to": entry["to"].strip() or "(espaço)"})
+        if ch == EM_DASH:
+            # " palavra — palavra " e "palavra—palavra" viram vírgula + espaço.
+            text = re.sub(r"\s*" + EM_DASH + r"\s*", ", ", text)
+        elif ch == EN_DASH:
+            text = re.sub(r"\s*" + EN_DASH + r"\s*(?=\d)", "-", text)   # 5–10 -> 5-10
+            text = re.sub(r"\s+" + EN_DASH + r"\s+", ", ", text)         # usada como travessão
+            text = text.replace(EN_DASH, "-")
         else:
             text = text.replace(ch, entry["to"])
-    # A comma inserted before existing punctuation reads wrong.
+    # Vírgula inserida antes de outra pontuação fica errada.
     text = re.sub(r",\s*([,.;:!?])", r"\1", text)
     text = re.sub(r",\s*\n", "\n", text)
     return text, hits
@@ -126,8 +143,16 @@ def _match_case(src, repl):
     return repl
 
 
+def _capitalize_sentences(text):
+    """Volta a maiúscula no início de linha e depois de . ! ? (mas não depois de ...)."""
+    text = re.sub(rf"(?m)^([{LOWER}])", lambda m: m.group(1).upper(), text)
+    text = re.sub(rf"((?<!\.\.)[.!?]\s+)([{LOWER}])",
+                  lambda m: m.group(1) + m.group(2).upper(), text)
+    return text
+
+
 def pass_lexical(text, lex):
-    """Replace slop words and phrases. Longest first so phrases win."""
+    """Troca palavras e expressões batidas. As mais longas primeiro, para as expressões vencerem."""
     hits = []
     entries = sorted(lex["phrases"] + lex["words"],
                      key=lambda e: len(e["find"]), reverse=True)
@@ -138,19 +163,27 @@ def pass_lexical(text, lex):
         found = pattern.findall(text)
         if not found:
             continue
-        hits.append({"find": find, "replace": entry["replace"] or "(deleted)",
+        hits.append({"find": find, "replace": entry["replace"] or "(apagado)",
                      "count": len(found), "family": entry["family"]})
         text = pattern.sub(lambda m: _match_case(m.group(0), entry["replace"]), text)
-    # Clean up after deletions.
+    if not hits:
+        return text, hits
+    # Limpeza depois das remoções.
     text = re.sub(r"[ \t]{2,}", " ", text)
     text = re.sub(r"(?m)^[ \t]*([,.;:])\s*", "", text)
     text = re.sub(r"\s+([,.;:!?])", r"\1", text)
     text = re.sub(r"(?m)^[ \t]+$", "", text)
+    text = re.sub(r"(?m)^[ \t]+(?=\S)", "", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
-    # An em dash that became a comma, followed by a sentence connective, leaves
-    # a splice ("is important, also, it's proof"). Promote it to a full stop.
-    text = re.sub(r",\s*(also|so|still|basically|in the end)\s*,\s*",
-                  lambda m: ". " + m.group(1)[0].upper() + m.group(1)[1:] + ", ", text)
+    # Travessão que virou vírgula, seguido de conectivo, deixa a frase emendada
+    # ("é importante, assim, os dados..."). Promove a ponto final.
+    text = re.sub(r",\s*(também|assim|por isso|no fundo|enfim)\s*,\s*",
+                  lambda m: ". " + m.group(1)[0].upper() + m.group(1)[1:] + ", ", text,
+                  flags=re.IGNORECASE)
+    # "Também," solto no início de frase (sobra de "Além disso,") soa estranho
+    # em português: remove.
+    text = re.sub(r"(^|[.!?]\s+)Também,\s*", r"\1", text, flags=re.MULTILINE)
+    text = _capitalize_sentences(text)
     return text, hits
 
 
@@ -164,7 +197,7 @@ def scan_structures(text, lex):
         found = pattern.findall(text)
         if found:
             flags.append({"name": s["name"], "count": len(found), "fix": s["fix"]})
-    # Sentence-length uniformity is structural too.
+    # Uniformidade no tamanho das frases também é estrutural.
     lens = [len(s.split()) for s in SENT_RE.findall(text) if len(s.split()) > 2]
     if len(lens) >= 4:
         mean = sum(lens) / len(lens)
@@ -172,17 +205,17 @@ def scan_structures(text, lex):
         cv = (var ** 0.5) / mean if mean else 0
         if cv < 0.35:
             flags.append({
-                "name": f"Uniform sentence length (variation {cv:.2f})",
+                "name": f"Frases de tamanho uniforme (variação {cv:.2f})",
                 "count": len(lens),
-                "fix": "Break one sentence in half. Let another run long. Machines write even.",
+                "fix": "Corte uma frase ao meio. Deixe outra se estender. Máquina escreve tudo igual.",
             })
     return flags
 
 
-def humanize(text, lex):
+def humanize(text, lex, keep_dash=False):
     text, urls = protect_urls(text)
     text, inv = pass_invisible(text, lex)
-    text, typo = pass_typographic(text, lex)
+    text, typo = pass_typographic(text, lex, keep_dash=keep_dash)
     text, lexi = pass_lexical(text, lex)
     text = restore_urls(text, urls)
     return text.strip() + "\n", {
@@ -201,44 +234,49 @@ def render_report(report, out=sys.stderr):
         + sum(h["count"] for h in report["typographic"]) \
         + sum(h["count"] for h in report["lexical"])
 
-    head("HUMANIZE REPORT")
-    print(f"{total} machine artefacts removed, "
-          f"{len(report['structures'])} structural tells flagged for rewrite", file=out)
+    head("RELATÓRIO DE HUMANIZAÇÃO")
+    print(f"{total} marca(s) de máquina removida(s), "
+          f"{len(report['structures'])} estrutura(s) denunciadora(s) apontada(s) para reescrita", file=out)
 
     if report["invisible"]:
-        head("1. INVISIBLE CHARACTERS")
+        head("1. CARACTERES INVISÍVEIS")
         for h in report["invisible"]:
             print(f"  {h['count']:>3}x  {h['name']}  -> {h['action']}", file=out)
     if report["typographic"]:
-        head("2. TYPOGRAPHY")
+        head("2. TIPOGRAFIA")
         for h in report["typographic"]:
             print(f"  {h['count']:>3}x  {h['name']}  -> {h['to']}", file=out)
     if report["lexical"]:
-        head("3. SLOP LEXICON")
+        head("3. LÉXICO BATIDO")
         for h in report["lexical"]:
             print(f"  {h['count']:>3}x  {h['find']}  -> {h['replace']}   [{h['family']}]", file=out)
     if report["structures"]:
-        head("4. STRUCTURAL TELLS  (not auto-fixed - rewrite these yourself)")
+        head("4. ESTRUTURAS DENUNCIADORAS  (não corrigidas automaticamente - reescreva você)")
         for h in report["structures"]:
             print(f"  {h['count']:>3}x  {h['name']}\n        {h['fix']}", file=out)
     if not any(report.values()):
-        head("CLEAN")
-        print("  Nothing to strip.", file=out)
+        head("LIMPO")
+        print("  Nada para remover.", file=out)
     print("", file=out)
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Strip the machine fingerprint out of a draft.")
-    ap.add_argument("input", nargs="?", default="-", help="file, or - for stdin")
-    ap.add_argument("-o", "--out", help="write cleaned text here instead of stdout")
-    ap.add_argument("--report", action="store_true", help="print what changed, to stderr")
-    ap.add_argument("--json", action="store_true", help="emit {text, report} as JSON")
-    ap.add_argument("--lexicon", default=LEX, help="path to slop.json")
+    ap = argparse.ArgumentParser(description="Tira a impressão digital de máquina de um rascunho.")
+    ap.add_argument("input", nargs="?", default="-", help="arquivo, ou - para stdin")
+    ap.add_argument("-o", "--out", help="grava o texto limpo aqui em vez de mostrar na tela")
+    ap.add_argument("--report", action="store_true", help="mostra o que mudou (em stderr)")
+    ap.add_argument("--json", action="store_true", help="emite {text, report} em JSON")
+    ap.add_argument("--lexicon", default=LEX, help="caminho do slop.json")
+    ap.add_argument("--keep-dash", action="store_true", help="mantém o travessão (—) em vez de trocar por vírgula")
     args = ap.parse_args()
 
-    raw = sys.stdin.read() if args.input == "-" else open(args.input, encoding="utf-8").read()
+    if args.input == "-":
+        raw = sys.stdin.read()
+    else:
+        with open(args.input, encoding="utf-8") as fh:
+            raw = fh.read()
     lex = load_lexicon(args.lexicon)
-    clean, report = humanize(raw, lex)
+    clean, report = humanize(raw, lex, keep_dash=args.keep_dash)
 
     if args.json:
         print(json.dumps({"text": clean, "report": report}, indent=2, ensure_ascii=False))
@@ -246,7 +284,7 @@ def main():
     if args.out:
         with open(args.out, "w", encoding="utf-8") as fh:
             fh.write(clean)
-        print(f"wrote {args.out}", file=sys.stderr)
+        print(f"gravado em {args.out}", file=sys.stderr)
     else:
         sys.stdout.write(clean)
     if args.report:
