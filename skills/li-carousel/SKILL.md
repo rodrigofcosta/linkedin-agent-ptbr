@@ -1,71 +1,128 @@
 ---
 name: li-carousel
 description: >-
-  Build a LinkedIn document post (carousel) - slide-by-slide copy, the cover
-  that earns the swipe, and the PDF to upload. Use when the user says
-  "carousel", "document post", "slides for LinkedIn", "turn this into a
-  carousel", or has a list-shaped idea that would die as a text post.
+  Monta um post de documento no LinkedIn (carrossel): o texto de cada slide, a
+  capa que faz a pessoa deslizar e o PDF para subir. Use quando o usuário
+  disser "carrossel", "post de documento", "slides para o LinkedIn",
+  "transforma isso num carrossel", "carousel", ou tiver uma ideia em formato de
+  lista ou de etapas que morreria como post de texto.
 ---
 
 # li-carousel
 
-Document posts are the highest-dwell format on LinkedIn, because a swipe is
-counted and a scroll is not. The format rewards one idea broken into steps.
-It punishes a text post cut into pieces.
+Post de documento é o formato com maior tempo de leitura no LinkedIn, porque
+cada deslizada conta e a rolagem não. O formato premia uma ideia dividida em
+etapas. E pune um post de texto picotado em pedaços.
 
-## When to use it instead of a text post
+## Antes de começar
 
-Use a carousel when the idea has **sequence** - steps, a countdown, a
-before/after progression, a framework with parts. Use a text post when the
-idea is one claim. Splitting one claim across eight slides is the most common
-way carousels fail, and if that is what the user has, say so and hand them to
-`/li-post`.
+Leia `~/.claude/linkedin/voice.md`: voz, temas, provas que servem de
+repertório, tom comercial e hashtags. Todo carrossel precisa ter o olhar
+geográfico que o `voice.md` exige.
 
-## Structure
+## Quando usar no lugar de um post de texto
 
-8-12 slides. Under 8 is a text post. Over 12 and the completion rate falls off
-a cliff.
+Use carrossel quando a ideia tem **sequência**: etapas, uma contagem
+regressiva, uma progressão de antes e depois, um método com partes. Use post
+de texto quando a ideia é uma afirmação só. Espalhar uma afirmação por oito
+slides é o jeito mais comum de um carrossel fracassar. Se é isso que o
+usuário tem, diga e mande para o `/li-post`.
+
+## Estrutura
+
+De 8 a 12 slides. Menos de 8 é post de texto. Mais de 12, a taxa de leitura
+até o fim despenca.
 
 ```
-1        COVER      the hook, 6 words or fewer, plus one line of promise
-2        THE STAKE  why this matters, in one sentence
-3-N      ONE IDEA PER SLIDE. A headline of 3-7 words, and at most 25 words
-                    under it. If a slide needs a paragraph, it is two slides.
-N+1      RECAP      the whole thing as a list, so the screenshot is useful
-LAST     CTA        one action. Follow, comment a keyword, or the link. One.
+1        CAPA        o gancho, em até 6 palavras, mais uma linha de promessa
+2        O QUE ESTÁ  por que isso importa, numa frase
+         EM JOGO
+3-N      UMA IDEIA POR SLIDE. Um título de 3 a 7 palavras e no máximo 25
+                     palavras abaixo dele. Se o slide precisa de um parágrafo,
+                     são dois slides.
+N+1      RESUMO      tudo em forma de lista, para o print ser útil sozinho
+ÚLTIMO   CHAMADA     uma ação só: seguir, comentar ou salvar. Uma.
 ```
 
-## Slide copy rules
+## Regras do texto dos slides
 
-- **Slide 1 is 80% of the result.** Six words. Big. The rest of the deck
-  cannot save a cover nobody swipes.
-- **Number every slide** (3/10). Completion goes up when people can see the
-  end.
-- **No slide is a paragraph.** If you cannot say it in 25 words, split it.
-- **The recap slide is the one people screenshot.** Make it standalone.
-- **The user's handle on every slide**, small, bottom corner. Screenshots
-  travel without you.
+- **O slide 1 é 80% do resultado.** Seis palavras. Grande. O resto do
+  carrossel não salva uma capa que ninguém desliza.
+- **Numere todos os slides** (3/10). A leitura até o fim aumenta quando a
+  pessoa vê onde termina.
+- **Nenhum slide é parágrafo.** Se não cabe em 25 palavras, divida. Em
+  português as palavras são mais longas que em inglês, então na dúvida corte.
+- **O slide de resumo é o que as pessoas printam.** Ele tem que funcionar
+  sozinho.
+- **O nome do usuário em todos os slides**, pequeno, no canto inferior. O
+  print viaja sem você. Use o nome e o endereço do perfil que estiverem no
+  `voice.md`; se não estiverem, pergunte.
+- **A chamada final segue o tom comercial do `voice.md`.** Em carrossel
+  pessoal com carga comercial baixa, a chamada é seguir, comentar ou salvar,
+  nunca "contrate" ou "fale com a nossa equipe".
 
-## Making the PDF
+## Mapas e imagens de satélite
 
-LinkedIn wants a PDF, 1080x1350 (4:5) for maximum feed real estate, under
-100MB, under 300 pages. Build it as HTML and print to PDF:
+Para quem trabalha com geografia, um bom mapa ou uma imagem de satélite num
+slide comunica mais do que três slides de texto. Regras:
+
+- **Um mapa, uma mensagem.** O título do slide diz o que a pessoa deve ver no
+  mapa. Legenda mínima, só o necessário para entender essa mensagem.
+- **Legível no celular.** O mapa vai ser visto do tamanho de uma miniatura:
+  poucas classes, cores bem contrastadas, nada de rótulos pequenos.
+- **Sempre com fonte**, em letra pequena no rodapé do slide (por exemplo,
+  "Fonte: IBGE", "Imagem: Sentinel-2/ESA", "MapBiomas").
+- **Cuidado com a licença.** Imagens comerciais (Planet, Kompsat e outras) e
+  mapas de projetos de clientes têm restrição de uso e de divulgação. Prefira
+  dados abertos (IBGE, MapBiomas, Sentinel-2, Landsat, OpenStreetMap). Qualquer
+  imagem ou mapa de projeto de cliente recebe `[AUTORIZAR]`.
+- **Peça o arquivo ao usuário.** Não invente mapa nem desenhe um "mapa
+  ilustrativo" que pareça dado real. Se o usuário não tiver a imagem, deixe um
+  espaço marcado `{{mapa: o que ele deve mostrar}}` no slide.
+
+## Gerando o PDF
+
+O LinkedIn pede PDF, em 1080x1350 (proporção 4:5, que ocupa mais espaço no
+feed), com menos de 100 MB e menos de 300 páginas. Monte como HTML e imprima
+em PDF:
 
 ```bash
-# one page per slide, 1080x1350, no margins
-# then: Chrome headless --print-to-pdf, or any HTML-to-PDF you already use
+# uma página por slide, 1080x1350, sem margem
+# depois: Chrome em modo headless com --print-to-pdf, ou qualquer conversor
+# de HTML para PDF que o usuário já use
 ```
 
-Write the HTML with one `<section>` per slide, `width:1080px; height:1350px;
-page-break-after:always`, a single accent colour, and type no smaller than
-28px - people read these on a phone at thumbnail size. If the user has a brand
-skill or design system in this project, use it and do not invent a palette.
+Escreva o HTML com um `<section>` por slide, `width:1080px; height:1350px;
+page-break-after:always`, uma única cor de destaque e fonte nunca menor que
+28px, porque as pessoas leem isso no celular, em tamanho de miniatura.
+Declare `<meta charset="utf-8">` no `<head>` para os acentos saírem certos, e
+confira no PDF final se "ç", "ã" e "é" aparecem corretamente.
 
-## Output
+Se o usuário tiver uma skill de marca ou um guia visual neste projeto, use e
+não invente paleta. Em carrossel pessoal, não use logotipo de empresa, a não
+ser que o usuário peça.
 
-The slide-by-slide copy first, as a numbered list the user can read in ten
-seconds. Then the accompanying **post text** - a carousel still needs 2-3
-lines above it, which is the actual hook in the feed. Run both through
-`/li-human`. Then build the PDF only if the user approves the copy.
+## Saída
 
-Nothing is uploaded to LinkedIn. The user posts the PDF themselves.
+Primeiro, o texto slide a slide, como lista numerada que o usuário lê em dez
+segundos. Depois, o **texto do post** que acompanha o carrossel: ele ainda
+precisa de duas ou três linhas acima do documento, e essas linhas são o
+verdadeiro gancho no feed. Hashtags no limite do `voice.md`. Passe os dois
+pelo `/li-human`. Se houver trechos com `[AUTORIZAR]`, liste-os antes.
+
+Exemplo do começo de uma lista de slides:
+
+```
+1/9   CAPA     Sua base de clientes mente
+               5 checagens geográficas antes de qualquer análise
+2/9   EM JOGO  Análise de mercado em cima de coordenada errada aponta,
+               com confiança, para o lugar errado.
+3/9   CHECAGEM 1 · Pontos empilhados
+               Muitos clientes no mesmo ponto quase sempre são geocoding
+               no centroide do CEP.
+...
+```
+
+Só gere o PDF depois que o usuário aprovar o texto.
+
+Nada é enviado ao LinkedIn. O usuário publica o PDF.
