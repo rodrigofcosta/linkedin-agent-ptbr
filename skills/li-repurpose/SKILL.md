@@ -1,71 +1,97 @@
 ---
 name: li-repurpose
 description: >-
-  Turn one long asset - a YouTube video, podcast, newsletter, blog post,
-  transcript or client call - into a week of LinkedIn posts. Use when the user
-  says "repurpose this", "turn this into posts", "I have a video/newsletter/
-  transcript", or pastes a long piece of content and wants it on LinkedIn.
+  Transforma um material longo (vídeo, podcast, newsletter, artigo de blog,
+  transcrição, palestra, portfólio, apresentação ou reunião com cliente) numa
+  semana de posts de LinkedIn. Use quando o usuário disser "reaproveita isso",
+  "transforma isso em posts", "tenho um vídeo/artigo/transcrição",
+  "repurpose this", ou colar um conteúdo longo e quiser levá-lo para o
+  LinkedIn.
 ---
 
 # li-repurpose
 
-One good long asset contains four to six posts. Most people extract one and
-throw the rest away.
+Um bom material longo tem de quatro a seis posts dentro dele. A maioria das
+pessoas tira um e joga o resto fora.
 
-## Input
+## Antes de começar
 
-A transcript, an article, a newsletter, a script, a call summary. If the user
-gives a YouTube URL and there is a transcript tool available in the session,
-use it; otherwise ask them to paste the text. Read the whole thing before
-extracting anything.
+Leia `~/.claude/linkedin/voice.md`: voz, temas, regras de uso das provas e
+tom comercial. Elas valem para cada post que sair daqui.
 
-## Extract, do not summarise
+## Entrada
 
-A summary of a video is not a post. Nobody wants the summary. Go through the
-asset and pull out the things that stand alone:
+Uma transcrição, um artigo, uma newsletter, um roteiro, um resumo de
+reunião, um PDF de apresentação ou portfólio. Se o usuário mandar um link do
+YouTube e houver uma ferramenta de transcrição disponível na sessão, use;
+caso contrário, peça para colar o texto. Leia o material inteiro antes de
+extrair qualquer coisa.
 
-| pull | what it is |
+## De onde veio o material
+
+Antes de extrair, identifique a origem, porque ela muda as regras:
+
+| origem | cuidado |
 | --- | --- |
-| **Claims** | every sentence that would start an argument |
-| **Numbers** | every figure, cost, duration, percentage |
-| **Stories** | every moment with a person, a scene and a cost |
-| **Mechanisms** | every "the way this works is..." explanation |
-| **Mistakes** | every admission of something that went wrong |
-| **Lines** | every sentence that is already quotable as-is |
+| **Do próprio usuário** (palestra, vídeo, artigo dele) | Pode usar livremente, na voz dele. |
+| **De uma empresa do usuário** (blog, portfólio, apresentação institucional) | O post pessoal não pode soar como material da empresa. Tire o "nós", a linguagem de vendas e qualquer chamada para contratar. Os cases viram repertório, seguindo as regras do `voice.md`: nada de "eu fiz", e empresa ou cliente só com `[AUTORIZAR]`. |
+| **Material marcado como confidencial ou privado** | Não use sem autorização explícita do usuário. Pergunte antes de extrair. |
+| **De terceiros** (artigo, estudo, vídeo de outra pessoa) | O post é a leitura do usuário sobre o material, nunca uma cópia. Não reproduza trechos, reescreva com as próprias palavras, cite a fonte e nunca apresente dados de terceiros como se fossem experiência do usuário. |
 
-List what you found, with counts, before writing anything. If the asset yields
-fewer than four items, it is thin, and four posts squeezed out of it will be
-thin too. Say that.
+## Extraia, não resuma
 
-## Then build the week
+O resumo de um vídeo não é um post. Ninguém quer o resumo. Percorra o
+material e tire as coisas que se sustentam sozinhas:
 
-Each extract becomes one post, and each post has to stand completely on its
-own - the reader has not seen the video and never will. Never write "as I
-mentioned in my latest video". The post is the thing.
+| o que tirar | o que é |
+| --- | --- |
+| **Afirmações** | toda frase que começaria uma discussão |
+| **Números** | todo valor, custo, duração, percentual, área, extensão |
+| **Histórias** | todo momento com uma pessoa, uma cena e um custo |
+| **Mecanismos** | toda explicação do tipo "funciona assim..." |
+| **Erros** | toda admissão de algo que deu errado |
+| **Frases** | toda frase que já pode ser citada do jeito que está |
 
-Assign a hook formula from `li-post/hooks.json` to each, and vary them: five
-posts from one source with the same hook shape reads as a content mill.
+Fique só com o que tem olhar geográfico, como o `voice.md` exige. O que não
+passa pelo território, pela localização ou pelo dado espacial fica de fora,
+mesmo que seja bom.
 
-Order them across the week so the strongest claim goes first, the story goes
-midweek, and the mechanism post goes last, when people who liked the earlier
-ones are watching for it.
+Liste o que encontrou, com as contagens, antes de escrever qualquer coisa. Se
+o material render menos de quatro itens, ele é fraco, e quatro posts
+espremidos dele também serão fracos. Diga isso.
 
-## Output
+## Depois, monte a semana
+
+Cada item extraído vira um post, e cada post precisa se sustentar sozinho: o
+leitor não viu o vídeo e nunca vai ver. Nunca escreva "como falei no meu
+último vídeo" ou "como está no nosso portfólio". O post é a coisa.
+
+Atribua uma fórmula de gancho do `li-post/hooks.json` a cada um e varie:
+cinco posts de uma mesma fonte com o mesmo formato de gancho parecem fábrica
+de conteúdo.
+
+Ordene ao longo da semana: a afirmação mais forte primeiro, a história no meio
+da semana e o post de mecanismo por último, quando quem gostou dos anteriores
+já está esperando por ele. Use os horários e o dia do plano da semana
+(`~/.claude/linkedin/plan.md`), se existir.
+
+## Saída
 
 ```
-SOURCE: "Why we killed discovery calls" (18 min, 3,400 words)
+FONTE: Portfólio da Novaterra (29 páginas, PDF)
+ORIGEM: empresa do usuário  ·  cases viram repertório, sem tom comercial
 
-FOUND  4 claims, 6 numbers, 2 stories, 3 mechanisms, 1 mistake, 5 quotable lines
+ENCONTRADO  3 afirmações, 9 números, 2 histórias, 4 mecanismos, 0 erros, 2 frases
 
-WEEK
-TUE  #1  Contrarian    Discovery calls are a tax you pay for a bad website
-WED  #17 Time Anchor   We got 6 hours a week back by deleting one calendar link
-THU  #9  Cold Open     "Can we just hop on a quick call?"
-FRI  #21 Direct Value  The 4-question form that replaced the call. Steal it.
+SEMANA
+TER  #1  Opinião Contrária   Licenciamento não trava por falta de dado. Trava por dado espalhado.
+QUA  #10 O Comprovante       Uma linha de transmissão de 2.420 km começa num mapa de uso do solo.
+QUI  #9  Começo de Cena      Em 2008, o IBAMA pediu algo que nunca tinha pedido numa grande hidrelétrica.
+SEX  #2  Número Revelado     Mais de 1.000 tarefas num projeto ambiental. Nenhum e-mail.
 
-Say "write Tuesday" and I will draft it.
+Diga "escreve terça" e eu monto o rascunho.
 ```
 
-Then draft on request, one at a time, each through `/li-post` and `/li-human`.
-Do not dump four finished posts at once - they will all sound the same, and
-the user will edit none of them.
+Depois, escreva sob pedido, um de cada vez, cada um passando pelo `/li-post`
+e pelo `/li-human`. Não entregue quatro posts prontos de uma vez: eles vão
+soar todos iguais, e o usuário não vai editar nenhum.
