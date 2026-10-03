@@ -1,83 +1,121 @@
 ---
 name: li-dm
 description: >-
-  Write connection notes and DM follow-ups that get replies - the 200-character
-  invite, the first message, and the two follow-ups. Use when the user says
-  "write a connection request", "DM this person", "outreach message", "how do I
-  follow up", or is reaching out to someone specific on LinkedIn.
+  Escreve convites de conexão e mensagens privadas que recebem resposta: o
+  convite de 200 caracteres, a primeira mensagem e os dois acompanhamentos.
+  Use quando o usuário disser "escreve um convite de conexão", "manda uma
+  mensagem para essa pessoa", "mensagem de prospecção", "como faço o
+  follow-up", "DM this person", ou estiver abordando alguém específico no
+  LinkedIn.
 ---
 
 # li-dm
 
-The invite note is 200 characters. The first DM decides whether there is a
-second one. Neither is a pitch.
+O convite tem 200 caracteres. A primeira mensagem decide se haverá uma
+segunda. Nenhum dos dois é uma oferta.
 
-## Before writing, get the specifics
+## Antes de escrever
 
-Ask for, in one batched question:
+1. Leia `~/.claude/linkedin/voice.md`: voz, temas, provas e regras de
+   autorização.
+2. Peça os detalhes, numa pergunta só:
+   - **Quem**: nome, cargo, empresa.
+   - **O gancho**: o motivo real para abordar agora. Um post que a pessoa
+     escreveu, algo que a empresa dela lançou, uma conexão em comum, uma
+     palestra. Não "ela se encaixa no meu perfil de cliente".
+   - **O que o usuário quer**: uma conversa, uma indicação, uma parceria,
+     uma venda. Seja honesto internamente, mesmo que a mensagem não comece
+     por aí.
+   - **Em nome de quem**: o usuário fala só como ele mesmo ou também como
+     profissional de uma empresa dele? Isso define se a empresa pode aparecer
+     na conversa.
 
-1. **Who** - name, role, company.
-2. **The hook** - the actual reason to reach out now. A post they wrote, a
-   thing their company shipped, a mutual connection, a talk they gave. Not
-   "they fit my ICP".
-3. **What the user wants** - a conversation, a referral, a job, a sale. Be
-   honest internally, even if the message does not lead with it.
+Se não há um motivo específico para mandar mensagem para essa pessoa hoje,
+diga isso. Mensagem sem motivo é o que todo mundo manda, e é por isso que a
+taxa de resposta deles fica perto de 2%.
 
-If there is no specific reason to message this person today, say so. A message
-with no reason is what everyone else sends, and it is why their reply rate is
-2%.
+## Tom comercial nas mensagens
 
-## The invite note (200 characters)
+A mensagem privada é o lugar onde uma conversa comercial pode acontecer, mas
+ela só acontece se a pessoa quiser. A escalada é gradual:
+
+| etapa | carga comercial | o que pode ter |
+| --- | --- | --- |
+| Convite | 0% | uma referência específica à pessoa e uma linha sobre quem é o usuário. Nada de pedido, empresa ou serviço. |
+| Primeira mensagem | baixa | primeiro entrega algo útil; o pedido é uma conversa curta, nunca uma apresentação de empresa. A empresa só aparece se for parte do gancho. |
+| Acompanhamentos | baixa | algo novo e útil; o pedido continua sendo a conversa. |
+| Depois que a pessoa responde com interesse | livre | aí sim a conversa pode falar de empresa, serviço e próximos passos. |
+
+Se o `voice.md` tiver regras mais específicas, siga o `voice.md`. Citar
+clientes, projetos ou certificações, mesmo no privado, recebe `[AUTORIZAR]`.
+
+## O convite (200 caracteres)
 
 ```
-{one specific reference to them} + {one line of who you are} + {no ask}
+{uma referência específica à pessoa} + {uma linha sobre quem é o usuário} + {nenhum pedido}
 ```
 
-The note asks for nothing. It exists to make the accept obvious. Under 200
-characters including spaces - count them and show the count.
+O convite não pede nada. Ele existe para tornar o aceite óbvio. Menos de 200
+caracteres, contando espaços: conte e mostre a contagem.
 
 ```
-Saw your post on killing the discovery call - we did the same thing in March
-and it worked. I run ops at a 12-person studio. Would like to follow along.
-                                                                    [187/200]
+Li seu post sobre expansão de lojas em cidades médias. Trabalho com
+inteligência de localização há 26 anos e gostaria de acompanhar o que você
+publica por aqui.
+                                                                    [160/200]
 ```
 
-## The first message, after they accept
+## A primeira mensagem, depois do aceite
 
-Wait a day. Then:
+Espere um dia. Depois:
 
-- **Two to four sentences.** A screen of text is a delete.
-- **Reference the specific thing** from the note - continuity is the whole
-  reason the note was specific.
-- **Give something before asking.** A number, a template, a name, an answer.
-- **One ask, and make it small.** "Worth a 15-minute call?" beats "let me walk
-  you through our platform".
-- **No calendar link in message one.** It reads as a funnel, because it is.
+- **De duas a quatro frases.** Uma tela de texto vai para o lixo.
+- **Retome o que foi citado no convite.** A continuidade é o motivo de o
+  convite ter sido específico.
+- **Entregue algo antes de pedir.** Uma observação técnica sobre o desafio
+  da pessoa, uma fonte de dado aberto que resolve parte do problema, um
+  número, uma resposta. Para quem trabalha com geografia, o mais valioso
+  costuma ser mostrar algo que a pessoa não estava vendo no território dela.
+- **Um pedido, e pequeno.** "Topa uma conversa de 15 minutos?" ganha de
+  "deixa eu te apresentar nossas soluções".
+- **Nada de link de agenda na primeira mensagem.** Parece funil, porque é.
 
-## Follow-ups
+## Acompanhamentos
 
-Two. That is the number.
+Dois. Esse é o número.
 
-- **+4 days** - add something new. Never "just bumping this" or "following up
-  on my last message". If you have nothing new, you have no follow-up.
-- **+10 days** - the close-the-loop message. Say you will stop, and mean it.
-  This one gets a surprising share of the total replies, because it removes
-  the pressure.
+- **Depois de 4 dias**: acrescente algo novo. Nunca "só passando para
+  lembrar" ou "retomando minha última mensagem". Se não há nada novo, não há
+  acompanhamento.
+- **Depois de 10 dias**: a mensagem de encerramento. Diga que vai parar de
+  insistir, e pare mesmo. Ela costuma trazer uma parte surpreendente das
+  respostas, porque tira a pressão.
 
-Then stop. A third follow-up converts nobody and costs the relationship.
+Depois disso, pare. Um terceiro acompanhamento não converte ninguém e
+desgasta a relação.
 
-## Never
+## Idioma e tratamento
 
-- Never send an automated connection or message sequence. Automated outreach
-  tools violate LinkedIn's User Agreement and get accounts restricted.
-- Never fabricate a mutual connection, a shared school, or having read
-  something the user has not read.
-- Never write the message that opens "I hope this message finds you well".
-- Never send more than 20 invites a day. Beyond that, LinkedIn throttles the
-  account, and a throttled account is a dead one.
+Escreva no idioma da pessoa. Em português, trate por "você", com o nível de
+formalidade do `voice.md`. Em inglês, mesmo tom: direto, profissional e sem
+gírias forçadas.
 
-## Output
+## Nunca
 
-The invite note with its character count, the first message, and both
-follow-ups with the day they go out. All humanized through `/li-human`. The
-user sends every one of them by hand.
+- Nunca envie sequências automáticas de convites ou mensagens. Ferramentas de
+  automação violam os Termos de Uso do LinkedIn e levam à restrição da conta.
+- Nunca invente uma conexão em comum, uma faculdade em comum ou a leitura de
+  algo que o usuário não leu.
+- Nunca abra com "Espero que esta mensagem o encontre bem", "Prezado(a)" ou
+  "Venho por meio desta".
+- Nunca mande mais de 20 convites por dia. Acima disso, o LinkedIn limita a
+  conta, e conta limitada é conta morta.
+- Nunca invente resultados ou números para parecer mais interessante. Se o
+  dado não está no `voice.md` e o usuário não forneceu, ele não entra.
+
+## Saída
+
+O convite com a contagem de caracteres, a primeira mensagem e os dois
+acompanhamentos, cada um com o dia em que deve ser enviado. Todos passados
+pelo `/li-human` (em inglês, só o `humanize.py`). Se houver trechos com
+`[AUTORIZAR]`, liste-os antes. O usuário envia cada um à mão.
